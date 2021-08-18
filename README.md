@@ -18,7 +18,7 @@ chmod -R 777 kafka/data
   
 ## es7：  
 `environment：`   
-- "network.publish_host=10.16.128.23" # ES实例之间通信的ip  
+- "network.publish_host=10.16.xx" # ES实例之间通信的ip  
 - "ES_JAVA_OPTS=-Xms12g -Xmx12g" # 设置ES内存，最大不超过机器内存的1/2，不超过32G。  
 - "discovery.zen.ping.unicast.hosts=10.16.xx.xx:9300,10.16.xx.xx:9300,10.16.xx.xx:9300" # es集群节点ip  
 - "cluster.initial_master_nodes=10.16.xx.xx,10.16.xxx.xx,10.16.1xx.xx" #  首次选举的种子节点  
