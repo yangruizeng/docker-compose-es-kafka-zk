@@ -1,0 +1,98 @@
+{
+  "version" : 2,
+  "index_patterns" : [
+    {
+      "es": {
+        "default_index": "log-ytt-default"
+      },
+      "tail_interval_in_seconds": 10,
+      "es_index_time_offset_in_seconds": 2,
+      "display_timezone": "Asia/Shanghai",
+      "display_timestamp_format": "MMM DD HH:mm:ss",
+      "max_buckets": 50,
+      "default_time_range_in_days" : 0,
+      "max_hosts": 100,
+      "max_events_to_keep_in_viewer": 500,
+      "default_search": "",
+      "fields" : {
+        "mapping" : {
+            "timestamp" : "@timestamp",
+            "hostname" : "app_id",
+            "program": "tags",
+            "message": "message"
+        },
+        "message_format": "{{{message}}}",
+        "keyword_suffix" : "keyword"
+      },
+      "color_mapping" : {
+              "ERROR": "#FF0000",
+              "WARN": "#FFEF96",
+              "DEBUG": "#B5E7A0",
+              "TRACE": "#CFE0E8",
+              "INFO": "#339999"
+      }
+    },
+     {
+      "es": {
+        "default_index": "log-ytt-aaa"
+      },
+      "tail_interval_in_seconds": 10,
+      "es_index_time_offset_in_seconds": 2,
+      "display_timezone": "Asia/Shanghai",
+      "display_timestamp_format": "MMM DD HH:mm:ss",
+      "max_buckets": 50,
+      "default_time_range_in_days" : 0,
+      "max_hosts": 100,
+      "max_events_to_keep_in_viewer": 500,
+      "default_search": "",
+      "fields" : {
+        "mapping" : {
+            "timestamp" : "@timestamp",
+            "hostname" : "app_id",
+            "program": "tags",
+            "message": "message"
+        },
+        "message_format": "{{{message}}}",
+        "keyword_suffix" : "keyword"
+      },
+      "color_mapping" : {
+              "ERROR": "#FF0000",
+              "WARN": "#FFEF96",
+              "DEBUG": "#B5E7A0",
+              "TRACE": "#CFE0E8",
+              "INFO": "#339999"
+      }
+    },
+     {
+      "es": {
+        "default_index": "log-ytt-bbb"
+      },
+      "tail_interval_in_seconds": 10,
+      "es_index_time_offset_in_seconds": 2,
+      "display_timezone": "Asia/Shanghai",
+      "display_timestamp_format": "MMM DD HH:mm:ss",
+      "max_buckets": 50,
+      "default_time_range_in_days" : 0,
+      "max_hosts": 100,
+      "max_events_to_keep_in_viewer": 500,
+      "default_search": "",
+      "fields" : {
+        "mapping" : {
+            "timestamp" : "@timestamp",
+            "hostname" : "app_id",
+            "program": "tags",
+            "message": "message"
+        },
+        "message_format": "{{{message}}}",
+        "keyword_suffix" : "keyword"
+      },
+      "color_mapping" : {
+              "ERROR": "#FF0000",
+              "WARN": "#FFEF96",
+              "DEBUG": "#B5E7A0",
+              "TRACE": "#CFE0E8",
+              "INFO": "#339999"
+      }
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+version: '2.3'
+
+services:
+  zook:
+    image: zookeeper:3.4.9
+    hostname: zook
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=node2-ip:2888:3888 server.3=node3-ip:2888:3888
+      # ZOO_SERVERS中，本机要填写0.0.0.0，其它节点写其它节点的ip地址
+    volumes:
+      - ./zookeeper/data:/data
+      - ./zookeeper/datalog:/datalog
+    networks:
+      - es7-net
+
+  kafka:
+    image: registry.cn-huhehaote.aliyuncs.com/recurrent/kafka:2.1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    restart: always
+    ports:
+      - 9092:9092
+    networks:
+      - es7-net
+    volumes:
+       - ./kafka/data:/bitnami
+       - ./kafka/config/server.properties:/opt/bitnami/kafka/conf/server.properties
+    environment:
+      - KAFKA_HEAP_OPTS=-Xmx4g -Xms4g
+      - KAFKA_ZOOKEEPER_CONNECT="node1-ip:2181,node2-ip:2181,node3-ip:2181"
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://node-1:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_DELETE_TOPIC_ENABLE=true
+      - KAFKA_NUM_PARTITIONS=10
+      - KAFKA_MAX_MESSAGE_BYTES=858993459
+      - KAFKA_LOG_RETENTION_HOURS=48
+      - KAFKA_LOG_RETENTION_BYTES=1073741824
+      - KAFKA_SEGMENT_BYTES=2147483647
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "29000:9000"
+    networks:
+      - es7-net
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms1024M -Xmx1024M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
+
+  es7:
+    #image: registry.cn-huhehaote.aliyuncs.com/recurrent/elasticsearch:7.6.0
+    image: elasticsearch:7.9.2
+    restart: always
+    networks:
+      - es7-net
+    environment:
+      - "cluster.name=elk"
+      - "bootstrap.memory_lock=false"
+      - "node.name=elk01"
+      - "http.host=0.0.0.0"
+      - "network.bind_host=0.0.0.0"
+      - "network.publish_host=本机ip"
+      - "transport.tcp.port=9300"
+      - "ES_JAVA_OPTS=-Xms12g -Xmx12g"
+      - "node.master=true"
+      - "node.data=true"
+      - "discovery.zen.ping.unicast.hosts=node1-ip:9300,node2-ip:9300,node3-ip:9300"
+      - "cluster.initial_master_nodes=node1,node2,node3"
+      - "cluster.routing.allocation.disk.threshold_enabled=true"
+      - "cluster.routing.allocation.disk.watermark.low=98%"
+      - "cluster.routing.allocation.disk.watermark.high=99%"
+      - "cluster.routing.allocation.disk.watermark.flood_stage=99%"
+      - "thread_pool.write.queue_size=3000"
+    hostname: es7
+    volumes:
+      - ./es7/data:/usr/share/elasticsearch/data
+      - ./es7/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+      - 9300:9300
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
+  kibana:
+    image: ccr.ccs.tencentyun.com/yttops/kibana:7.9.2
+    networks:
+      - es7-net
+    restart: always
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+      - type: bind
+        source: ./kibana/logtrail/logtrail.json
+        target: /usr/share/kibana/plugins/logtrail/logtrail.json
+    ports:
+      - "5601:5601"
+    depends_on:
+      - es7
+
+  cerebro:
+    image: lmenezes/cerebro
+    networks:
+      - es7-net
+    restart: always
+    volumes:
+      - ./cerebro/logs:/opt/cerebro/logs
+    ports:
+      - 9000:9000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    networks:
+      - es7-net
+
+networks:
+  es7-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 10.88.12.0/24
+        gateway: 10.88.12.1
