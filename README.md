@@ -8,9 +8,10 @@ chmod -R 777 kafka/data
 # 注意的地方  
 ## kafka：
 `server.properties:`  
-broker.id=1 # 各个节点id不能重复  
-advertised.listeners=PLAINTEXT://10.16.128.23:9092 # 对外提供服务的ip端口  
-zookeeper.connect=10.16.128.23:2181,10.16.128.48:2181,10.16.128.39:2181 # zk集群地址    
+- broker.id=1 # 各个节点id不能重复  
+- advertised.listeners=PLAINTEXT://10.16.128.23:9092 # 对外提供服务的ip端口  
+- zookeeper.connect=10.16.128.23:2181,10.16.128.48:2181,10.16.128.39:2181 # zk集群地址    
+  
 `environment:`  
 - KAFKA_ZOOKEEPER_CONNECT="10.16.128.23:2181,10.16.128.48:2181,10.16.128.39:2181" # zk集群地址    
 - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://10.16.128.23:9092 # 对外提供服务的ip端口  
